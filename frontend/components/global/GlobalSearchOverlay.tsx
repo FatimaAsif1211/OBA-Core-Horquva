@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { goToTarget } from '@/lib/navigate';
 import {
   Search,
   X,
@@ -129,27 +130,14 @@ export default function GlobalSearchOverlay() {
     Promise.resolve().then(() => setCursor(0));
   }, [query, isSearchOpen]);
 
-  const go = useCallback(
-    (target: CommandTarget) => {
-      closeAllPanels();
-      setQuery('');
-
-      const href = target.match
-        ? `${target.page}?focus=${encodeURIComponent(target.match)}`
-        : target.page;
-
-      if (target.page === pathname) {
-        // Same route — nothing to mount, just move.
-        window.history.replaceState(null, '', href);
-        requestFocus(target.match);
-      } else {
-        router.push(href);
-        // The focus engine retries until the destination's data has landed.
-        requestFocus(target.match);
-      }
-    },
-    [closeAllPanels, pathname, router],
-  );
+ const go = useCallback(
+  (target: CommandTarget) => {
+    closeAllPanels();
+    setQuery('');
+    goToTarget({ page: target.page, match: target.match, router });
+  },
+  [closeAllPanels, router],
+);
 
   // ── Ctrl/Cmd+K anywhere ──
   useEffect(() => {

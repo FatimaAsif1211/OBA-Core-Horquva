@@ -8,6 +8,7 @@ import GlobalNotificationPanel from '@/components/global/GlobalNotificationPanel
 import GlobalSearchOverlay from '@/components/global/GlobalSearchOverlay';
 import CommandBar from '@/components/global/CommandBar';
 import DeepLinkFocus from '@/components/global/DeepLinkFocus';
+import { AgentProvider } from '../agent/AgentProvider';  // ← ADD THIS
 
 const AUTH_ROUTES = ['/login'];
 
@@ -34,17 +35,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // ← WRAP EVERYTHING WITH AgentProvider
   return (
-    <div className="flex h-full">
-      <Sidebar />
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden relative">
-        <CommandBar />
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8">{children}</main>
+    <AgentProvider>
+      <div className="flex h-full">
+        <Sidebar />
+        <div className="flex flex-1 flex-col min-w-0 overflow-hidden relative">
+          <CommandBar />
+          <main className="flex-1 overflow-y-auto p-6 lg:p-8">{children}</main>
+        </div>
+        <GlobalNotificationPanel />
+        <GlobalSearchOverlay />
+        <DeepLinkFocus />
       </div>
-      <GlobalNotificationPanel />
-      <GlobalSearchOverlay />
-      <DeepLinkFocus />
-    </div>
+    </AgentProvider>
   );
 }
 

@@ -1,6 +1,43 @@
 "use client";
 
 import { useAgent } from "./AgentProvider";
+import { AgentMessage } from "./AgentMessage";
+import { AgentComposer } from "./AgentComposer";
+import { ToolStatusLine } from "./ToolStatusLine";
+import { EmptyState } from "./EmptyState";
+
+function ConversationBody() {
+  const { state } = useAgent();
+  const { messages, isStreaming, currentStream } = state;
+
+  const runningTool = currentStream?.toolCalls.find(
+    (tc) => tc.status === "running"
+  );
+
+  const isEmpty = messages.length === 0 && !isStreaming;
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+      {isEmpty ? (
+        <EmptyState />
+      ) : (
+        <>
+          {messages.map((msg) => (
+            <AgentMessage key={msg.id} message={msg} />
+          ))}
+
+          {isStreaming && currentStream && (
+            <AgentMessage
+              message={{ role: "assistant", content: currentStream.text }}
+            />
+          )}
+
+          {runningTool && <ToolStatusLine label={runningTool.label} />}
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AgentPanel() {
   const { state } = useAgent();
@@ -36,15 +73,12 @@ export default function AgentPanel() {
           width: "760px",
           margin: "0 auto",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {/* TAYYABA (Task 12.5): replace this line with <AgentMessage /> list,
-            mapped over `messages` from state above */}
-        <div>Messages go here</div>
-
-        {/* TAYYABA (Task 12.5): replace this line with <AgentComposer />,
-            wired to sendMessage() and abort() from useAgent() */}
-        <div>Composer goes here</div>
+        <ConversationBody />
+        <AgentComposer />
       </div>
     );
   }
@@ -58,12 +92,12 @@ export default function AgentPanel() {
         right: 0,
         width: "400px",
         height: "100vh",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {/* TAYYABA (Task 12.5): same components as fullscreen above,
-          just rendered inside this docked container instead */}
-      <div>Messages go here</div>
-      <div>Composer goes here</div>
+      <ConversationBody />
+      <AgentComposer />
     </div>
   );
 }

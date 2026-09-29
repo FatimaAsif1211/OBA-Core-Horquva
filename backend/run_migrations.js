@@ -33,7 +33,15 @@ function migrationFiles() {
 
   const dir = path.join(__dirname, 'sql')
   if (fs.existsSync(dir)) {
-    for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()) {
+    // auth_schema.sql creates app_users, which 12_consolidate_single_tenant.sql
+    // updates, so it must run before the numbered files. The filename is kept
+    // as-is so databases that already recorded it see nothing new.
+    const first = 'auth_schema.sql'
+    const rest = fs.readdirSync(dir)
+      .filter((f) => f.endsWith('.sql') && f !== first)
+      .sort()
+    const ordered = fs.existsSync(path.join(dir, first)) ? [first, ...rest] : rest
+    for (const f of ordered) {
       files.push({ name: f, path: path.join(dir, f) })
     }
   }

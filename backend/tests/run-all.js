@@ -11,6 +11,7 @@ const tests = [
 	'brain.smoke.test.js',
 	'intelligence.verify.test.js',
 	'auth.unit.test.js',
+	'agentData.unit.test.js',
 ]
 // api.smoke.test.js only runs when BASE_URL is set (otherwise localhost would fail).
 if (process.env.BASE_URL) tests.push('api.smoke.test.js')

@@ -1303,3 +1303,65 @@ export async function pingEndpoint(path: string): Promise<PingResult> {
     };
   }
 }
+
+// --- Change Impact (FE-5 / AI-6) ---------------------------------------------
+
+export interface ChangeImpactAgent {
+  agentId: string | number;
+  agentName: string;
+  delta: number | null;
+}
+
+export interface ChangeImpactPerson {
+  employeeId: string | number;
+  name: string;
+  delta: number | null;
+}
+
+export interface ChangeImpactWorkflow {
+  id: string | number;
+  name: string;
+}
+
+export interface ChangeImpactEvent {
+  id: string | number;
+  scan_id: string | number | null;
+  change_type: string;
+  target_type: string;
+  target_id: string | number;
+  change: unknown;
+  description: string;
+  priced: boolean;
+  health_before: number | null;
+  health_after: number | null;
+  health_delta: number | null;
+  impact: {
+    note?: string | null;
+    agents: ChangeImpactAgent[];
+    people: ChangeImpactPerson[];
+    spofChanges: unknown[];
+    downstream: {
+      agents: Array<{
+        id: string | number;
+        name?: string;
+      }>;
+      workflows: ChangeImpactWorkflow[];
+    };
+  };
+  dedup_key?: string | null;
+}
+
+export interface ChangeImpactEventsResponse {
+  events: ChangeImpactEvent[];
+}
+
+export const changeImpactApi = {
+  events: () =>
+    request<ChangeImpactEventsResponse>('/api/change-impact/events'),
+
+  preview: (body: Record<string, unknown>) =>
+    request<Record<string, unknown>>('/api/change-impact/preview', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+};

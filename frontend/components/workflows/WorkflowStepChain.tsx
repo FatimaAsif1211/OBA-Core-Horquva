@@ -1,5 +1,6 @@
 'use client';
 
+import { ChangeImpactPanel } from '../change-impact/ChangeImpactPanel';
 import { useState, useEffect } from 'react';
 import {
   workflows,
@@ -248,6 +249,11 @@ function WorkflowCard({
               ))}
             </div>
           )}
+
+          {/* Change Impact */}
+          <div className="mt-5">
+            <ChangeImpactPanel workflowName={wf.workflow} />
+          </div>
         </div>
       )}
     </div>
@@ -363,3 +369,5 @@ export function WorkflowStepChain() {
     </div>
   );
 }
+
+

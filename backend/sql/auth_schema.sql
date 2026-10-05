@@ -1,5 +1,5 @@
 -- OBA Core — Auth schema
--- Run this once in the Supabase SQL editor.
+-- Applied by run_migrations.js, right after schema.sql. Never run by hand.
 
 create table if not exists app_users (
   id           uuid primary key default gen_random_uuid(),
